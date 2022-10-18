@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.10)
+project(terrain-interpolation VERSION 2021.0.0 LANGUAGES C CXX)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_subdirectory(src)
