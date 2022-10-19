@@ -2,10 +2,6 @@
 #ifndef VOXELFIELD_HPP
 #define VOXELFIELD_HPP
 
-#include "mesh.hpp"
-#include "drawable.hpp"
-#include "geomutils.hpp"
-
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -17,23 +13,18 @@
 #include <glm/glm.hpp>
 #include <cmath>
 
-typedef std::vector<std::vector<std::vector<float>>> VoxelFieldData;
+#include "mesh.hpp"
+#include "drawable.hpp"
+#include "geomutils.hpp"
+#include "sparseChunk.hpp"
 
 class World : public Drawable
 {
 private:
-  /* The size of the voxel field */
-  int size;
   /* The voxel field data */
-  VoxelFieldData voxels;
+  sparseChunk voxels;
   /* The mesh associated with the voxel field. */
   Mesh mesh;
-  /** The grid associated with the voxel field. */
-  Mesh grid;
-  /**
-   * Creates the vertices and primitives of the grid mesh.
-  */
-  void createGrid();
   /**
    * Creates the vertices and primitives of the mesh.
    */
@@ -43,13 +34,13 @@ public:
   /**
    * Creates a voxel field with the given size.
    */
-  World(int size);
+  World();
   /**
    * Destroys the voxel field.
    */
   ~World();
   /**
-   * Randomize the voxel field data.
+   * Randomize the voxel field data (place random voxels in the field).
    */
   void randomize();
   /**
@@ -65,9 +56,9 @@ public:
    */
   float getVoxel(int x, int y, int z);
   /**
-   * Apply a function to each voxel.
+   * Apply a function to each voxel in need of updating.
   */
-  void apply(std::function<float(int, int, int, VoxelFieldData)> f);
+  void apply(std::function<float(int, int, int, sparseChunk)> f);
 };
 
 #endif

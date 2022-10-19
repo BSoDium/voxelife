@@ -39,7 +39,7 @@ float t = 0.0f;
 World *field;
 
 // TODO: make the sim into an actual thread
-bool running = true;
+bool running = false;
 
 /**
  * Place the camera in the scene
@@ -101,7 +101,7 @@ void render()
 
   // Draw the field
   field->draw();
-  // field->drawRef();
+  field->drawRef();
 
   glPopMatrix();
 }
@@ -151,7 +151,7 @@ void error_callback(__attribute__((unused)) int error, __attribute__((unused)) c
   fprintf(stderr, "GLFW Error: %s\n", description);
 }
 
-void resize_callback(GLFWwindow *window, int width, int height)
+void resize_callback(GLFWwindow*, int width, int height)
 {
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
@@ -212,7 +212,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
   initGL();
 
   // Generate a random field (must be run after initGL)
-  field = new World(20);
+  field = new World();
   field->randomize();
 
   // Loop until the user closes the window
@@ -223,7 +223,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
     render();
 
     if (running)
-      field->apply(conway);
+      field->apply(smoothConway);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);

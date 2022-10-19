@@ -5,6 +5,8 @@
 
 #include "world.hpp"
 
-float conway(int x, int y, int z, VoxelFieldData data);
+float conway(int x, int y, int z, sparseChunk data);
+
+float smoothConway(int x, int y, int z, sparseChunk data);
 
 #endif // LOGIC_HPP
