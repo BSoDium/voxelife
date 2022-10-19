@@ -3,7 +3,7 @@
 
 #define GEN_BOUND 50
 #define GEN_CLUSTER_COUNT 7
-#define GEN_CLUSTER_SIZE 10
+#define GEN_CLUSTER_SIZE 4
 #define GEN_CLUSTER_BOUND 5
 
 #include "world.hpp"

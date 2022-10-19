@@ -25,19 +25,19 @@ float conway(int x, int y, int z, sparseChunk data)
     }
     if (value == 1.0f)
     {
-        if (neighbors == 3 || neighbors == 4)
+        if (neighbors == 2 || neighbors == 3)
         {
             return 1.0f;
         }
     }
     else
     {
-        if (neighbors == 4)
+        if (neighbors == 3)
         {
             return 1.0f;
         }
     }
-    return std::max(value - DECAY, 0.0f);
+    return std::max(0.0f, value - DECAY);
 }
 
 
@@ -64,14 +64,14 @@ float smoothConway(int x, int y, int z, sparseChunk data)
     }
     if (value != 0.0f)
     {
-        if (neighbors >= 3 && neighbors <= 4)
+        if (neighbors >= 2 && neighbors <= 3)
         {
-            return std::min(value + DECAY, 1.0f);
+            return value;
         }
     }
     else
     {
-        if (neighbors >= 3.5 && neighbors <= 4)
+        if (neighbors >= 2.5 && neighbors <= 3)
         {
             return std::min(value + DECAY, 1.0f);
         }

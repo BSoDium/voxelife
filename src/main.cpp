@@ -59,16 +59,15 @@ void placeCamera()
  */
 void placeLighting()
 {
-  GLfloat light_ambient[] = {0.3, 0.4, 0.6, 1.0};
-  GLfloat light_diffuse_specular[] = {0.05, 0.05, 0.05, 1.0};
+  GLfloat light_ambient[] = {0.7, 0.7, 0.7, 1.0};
+  GLfloat light_diffuse_specular[] = {0.01, 0.01, 0.01, 1.0};
 
   // Ambient light
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
 
   // Directional light
-  GLfloat directionalLight[] = {0.3, 0.4, 0.0, 0.0};
+  GLfloat directionalLight[] = {0.3, 0.4, 0.3, 0.0};
   glLightfv(GL_LIGHT0, GL_POSITION, directionalLight);
-
   glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse_specular);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_diffuse_specular);
 
@@ -77,7 +76,7 @@ void placeLighting()
   glEnable(GL_LIGHT0);
 
   // Set clear color to match the sky
-  glClearColor(0.5 * light_ambient[0], 0.5 * light_ambient[1], 0.5 * light_ambient[2], light_ambient[3]);
+  glClearColor(0.2 * light_ambient[0], 0.2 * light_ambient[1], 0.2 * light_ambient[2], light_ambient[3]);
 }
 
 /**
@@ -223,7 +222,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
     render();
 
     if (running)
-      field->apply(smoothConway);
+      field->apply(conway);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);

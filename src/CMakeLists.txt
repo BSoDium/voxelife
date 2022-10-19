@@ -6,6 +6,7 @@ add_executable(main ${CPP_FILES})
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(GLUT REQUIRED)
 find_package(glm REQUIRED)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
