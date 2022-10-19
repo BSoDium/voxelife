@@ -59,7 +59,7 @@ void placeCamera()
  */
 void placeLighting()
 {
-  GLfloat light_ambient[] = {0.7, 0.7, 0.7, 1.0};
+  GLfloat light_ambient[] = {1.1, 1.1, 1.1, 1.0};
   GLfloat light_diffuse_specular[] = {0.01, 0.01, 0.01, 1.0};
 
   // Ambient light
