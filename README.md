@@ -9,7 +9,7 @@ Setup the dependencies mentionned below, *ie* `OpenGL`, `GLFW`, `Glm`, `GLEW`, a
 Build the project with `cmake` and `make`:
 
 ```bash
-cd hypergol
+cd voxelife
 mkdir build
 cd build
 cmake ..
