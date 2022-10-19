@@ -1,6 +1,6 @@
-# Four-dimensional Game of life simulation
+# Three-dimensional Game of life simulation
 
-This is a proof of concept for a four-dimensional game of life simulation. It is written in C++ and uses OpenGL for rendering.
+This is a proof of concept for a three-dimensional game of life simulation. It is written in C++ and uses OpenGL for rendering.
 
 ## Installation
 
