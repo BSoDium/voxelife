@@ -11,16 +11,17 @@
 World::World()
 {
   // Create the voxel field data
-  voxels = sparseChunk();
+  data = sparseChunk();
+  buffer = sparseChunk();
 
-  createMesh();
+  updateMesh();
 }
 
 World::~World()
 {
 }
 
-void World::createMesh()
+void World::updateMesh()
 {
 
   std::vector<vertex> vertices;
@@ -29,7 +30,7 @@ void World::createMesh()
   // Create the vertices
   int i = 0;
 
-  voxels.forEach([&](vec3i pos, float value)
+  data.forEach([&](vec3i pos, float value)
                  {
     if (value > 0.0f) {
       float halfSize = value / 2.0f;
@@ -85,6 +86,36 @@ void World::draw()
   glPopMatrix();
 }
 
+void World::setVoxel(int x, int y, int z, float value)
+{
+  buffer.set(vec3i(x, y, z), value);
+}
+
+void World::setVoxel(vec3i pos, float value)
+{
+  buffer.set(pos, value);
+}
+
+float World::getVoxel(int x, int y, int z)
+{
+  return data.get(vec3i(x, y, z));
+}
+
+float World::getVoxel(vec3i pos)
+{
+  return data.get(pos);
+}
+
+void World::update()
+{
+  // Update the voxel field
+  data = buffer;
+  buffer = sparseChunk();
+
+  // Update the mesh
+  updateMesh();
+}
+
 void World::randomize()
 {
   // Add a random number of voxels to the field
@@ -104,21 +135,18 @@ void World::randomize()
           rand() % GEN_CLUSTER_BOUND - GEN_CLUSTER_BOUND / 2,
           rand() % GEN_CLUSTER_BOUND - GEN_CLUSTER_BOUND / 2);
       
-      voxels.set(pos + offset, 1.0f);      
+      this->setVoxel(pos + offset, 1.0f);
     }
   }
 
-  // Update the mesh
-  createMesh();
+  // Update the data
+  update();
 }
 
 void World::apply(std::function<float(int, int, int, sparseChunk)> f)
 {
-  // Make a copy of the data
-  sparseChunk data = sparseChunk();
-
   // Apply the function to the data
-  voxels.forEach(
+  data.forEach(
       [&](vec3i pos, float)
       {
         for (int i = -1; i <= 1; i++)
@@ -127,9 +155,9 @@ void World::apply(std::function<float(int, int, int, sparseChunk)> f)
           {
             for (int k = -1; k <= 1; k++)
             {
-              if (!data.has(pos.x + i, pos.y + j, pos.z + k))
+              if (!buffer.has(pos.x + i, pos.y + j, pos.z + k))
               {
-                data.set(pos.x + i, pos.y + j, pos.z + k, f(pos.x + i, pos.y + j, pos.z + k, voxels));
+                setVoxel(pos.x + i, pos.y + j, pos.z + k, f(pos.x + i, pos.y + j, pos.z + k, data));
               }
             }
           }
@@ -137,8 +165,5 @@ void World::apply(std::function<float(int, int, int, sparseChunk)> f)
       });
 
   // Update the data
-  voxels = data;
-
-  // Update the mesh
-  createMesh();
+  update();
 }

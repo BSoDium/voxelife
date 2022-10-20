@@ -22,13 +22,18 @@ class World : public Drawable
 {
 private:
   /* The voxel field data */
-  sparseChunk voxels;
+  sparseChunk data;
+  /** A copy of the voxel field data which is used to edit the voxel field. */
+  sparseChunk buffer;
+  /* The voxels that need to be monitored */
+  std::vector<vec3i> monitoredVoxels;
   /* The mesh associated with the voxel field. */
   Mesh mesh;
+  
   /**
    * Creates the vertices and primitives of the mesh.
    */
-  void createMesh();
+  void updateMesh();
 
 public:
   /**
@@ -52,9 +57,22 @@ public:
   */
   void setVoxel(int x, int y, int z, float value);
   /**
+   * Set the value of a voxel.
+  */
+  void setVoxel(vec3i pos, float value);
+  /**
    * Get the value of a voxel.
    */
   float getVoxel(int x, int y, int z);
+  /**
+   * Get the value of a voxel.
+   */
+  float getVoxel(vec3i pos);
+  /** 
+   * Copy the buffer to the data.
+  */
+  void update();
+
   /**
    * Apply a function to each voxel in need of updating.
   */
