@@ -12,66 +12,96 @@ vec3i vec3i::operator+(const struct vec3i& other) const
     return vec3i(x + other.x, y + other.y, z + other.z);
 }
 
-sparseChunk::sparseChunk()
+std::string vec3i::toString()
+{
+    return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+}
+
+SparseChunk::SparseChunk()
 {
 }
 
-sparseChunk::~sparseChunk()
+SparseChunk::~SparseChunk()
 {
 }
 
-void sparseChunk::set(vec3i pos, float value)
+void SparseChunk::set(vec3i pos, float value)
 {
   if (value == 0.0f) {
-    voxels.erase(pos);
+    data.erase(pos);
   } else {
-    voxels[pos] = value;
+    data[pos] = value;
   }
 }
 
-void sparseChunk::set(int x, int y, int z, float value)
+void SparseChunk::set(int x, int y, int z, float value)
 {
     set(vec3i(x, y, z), value);
 }
 
-float sparseChunk::get(vec3i pos)
+float SparseChunk::get(vec3i pos)
 {
-  if (voxels.find(pos) == voxels.end()) {
+  if (data.find(pos) == data.end()) {
     return 0.0f;
   } else {
-    return voxels[pos];
+    return data[pos];
   }
 }
 
-float sparseChunk::get(int x, int y, int z)
+float SparseChunk::get(int x, int y, int z)
 {
     return get(vec3i(x, y, z));
 }
 
-bool sparseChunk::has(vec3i pos)
+bool SparseChunk::has(vec3i pos)
 {
-    return voxels.find(pos) != voxels.end();
+    return data.find(pos) != data.end();
 }
 
-bool sparseChunk::has(int x, int y, int z)
+bool SparseChunk::has(int x, int y, int z)
 {
     return has(vec3i(x, y, z));
 }
 
-int sparseChunk::size()
+int SparseChunk::size()
 {
-    return voxels.size();
+    return data.size();
 }
 
-void sparseChunk::clear()
+void SparseChunk::clear()
 {
-    voxels.clear();
+    data.clear();
 }
 
-void sparseChunk::forEach(std::function<void(vec3i, float)> f)
+std::map<vec3i, float> SparseChunk::getData()
 {
-    for (auto it = voxels.begin(); it != voxels.end(); it++)
+    return data;
+}
+
+void SparseChunk::forEach(std::function<void(vec3i, float)> f)
+{
+    for (auto it = data.begin(); it != data.end(); it++)
     {
         f(it->first, it->second);
     }
+}
+
+std::vector<vec3i> getNeighbours(vec3i pos, bool includeSelf)
+{
+    std::vector<vec3i> neighbors;
+    for (int x = -1; x <= 1; x++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int z = -1; z <= 1; z++)
+            {
+                if (x == 0 && y == 0 && z == 0 && !includeSelf)
+                {
+                    continue;
+                }
+                neighbors.push_back(vec3i(x, y, z) + pos);
+            }
+        }
+    }
+    return neighbors;
 }

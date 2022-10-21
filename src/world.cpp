@@ -11,8 +11,8 @@
 World::World()
 {
   // Create the voxel field data
-  data = sparseChunk();
-  buffer = sparseChunk();
+  data = SimChunk();
+  buffer = SimChunk();
 
   updateMesh();
 }
@@ -31,7 +31,7 @@ void World::updateMesh()
   int i = 0;
 
   data.forEach([&](vec3i pos, float value)
-                 {
+               {
     if (value > 0.0f) {
       float halfSize = value / 2.0f;
       
@@ -110,7 +110,7 @@ void World::update()
 {
   // Update the voxel field
   data = buffer;
-  buffer = sparseChunk();
+  buffer = SimChunk();
 
   // Update the mesh
   updateMesh();
@@ -126,7 +126,7 @@ void World::randomize()
         rand() % GEN_BOUND - GEN_BOUND / 2,
         rand() % GEN_BOUND - GEN_BOUND / 2,
         rand() % GEN_BOUND - GEN_BOUND / 2);
-    
+
     // Generate GEN_CLUSTER_SIZE voxels around the position
     for (int j = 0; j < GEN_CLUSTER_SIZE; j++)
     {
@@ -134,8 +134,8 @@ void World::randomize()
           rand() % GEN_CLUSTER_BOUND - GEN_CLUSTER_BOUND / 2,
           rand() % GEN_CLUSTER_BOUND - GEN_CLUSTER_BOUND / 2,
           rand() % GEN_CLUSTER_BOUND - GEN_CLUSTER_BOUND / 2);
-      
-      this->setVoxel(pos + offset, 1.0f);
+
+      setVoxel(pos + offset, 1.0f);
     }
   }
 
@@ -143,26 +143,15 @@ void World::randomize()
   update();
 }
 
-void World::apply(std::function<float(int, int, int, sparseChunk)> f)
+void World::apply(std::function<float(int, int, int, SimChunk)> f)
 {
   // Apply the function to the data
   data.forEach(
       [&](vec3i pos, float)
       {
-        for (int i = -1; i <= 1; i++)
-        {
-          for (int j = -1; j <= 1; j++)
-          {
-            for (int k = -1; k <= 1; k++)
-            {
-              if (!buffer.has(pos.x + i, pos.y + j, pos.z + k))
-              {
-                setVoxel(pos.x + i, pos.y + j, pos.z + k, f(pos.x + i, pos.y + j, pos.z + k, data));
-              }
-            }
-          }
-        }
-      });
+        setVoxel(pos.x, pos.y, pos.z, f(pos.x, pos.y, pos.z, data));
+      },
+      true);
 
   // Update the data
   update();

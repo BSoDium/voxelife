@@ -1,6 +1,6 @@
 
-#ifndef VOXELFIELD_HPP
-#define VOXELFIELD_HPP
+#ifndef WORLD_HPP
+#define WORLD_HPP
 
 #include <iostream>
 #include <cmath>
@@ -16,17 +16,15 @@
 #include "mesh.hpp"
 #include "drawable.hpp"
 #include "geomutils.hpp"
-#include "sparseChunk.hpp"
+#include "simChunk.hpp"
 
 class World : public Drawable
 {
 private:
   /* The voxel field data */
-  sparseChunk data;
+  SimChunk data;
   /** A copy of the voxel field data which is used to edit the voxel field. */
-  sparseChunk buffer;
-  /* The voxels that need to be monitored */
-  std::vector<vec3i> monitoredVoxels;
+  SimChunk buffer;
   /* The mesh associated with the voxel field. */
   Mesh mesh;
   
@@ -76,7 +74,7 @@ public:
   /**
    * Apply a function to each voxel in need of updating.
   */
-  void apply(std::function<float(int, int, int, sparseChunk)> f);
+  void apply(std::function<float(int, int, int, SimChunk)> f);
 };
 
 #endif

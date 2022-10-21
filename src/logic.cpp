@@ -2,37 +2,55 @@
 
 #define DECAY 0.05f
 
-float conway(int x, int y, int z, sparseChunk data)
+float conway(int x, int y, int z, SimChunk data)
 {
-    int neighbors = 0;
+    int neighbourCount = 0;
     float value = data.get(x, y, z);
-    for (int i = -1; i <= 1; i++)
+    for (vec3i neighbour : getNeighbours(vec3i(x, y, z)))
     {
-        for (int j = -1; j <= 1; j++)
+        if (data.get(neighbour) == 1.0f)
         {
-            for (int k = -1; k <= 1; k++)
-            {
-                if (i == 0 && j == 0 && k == 0)
-                {
-                    continue;
-                }
-                if (data.get(x + i, y + j, z + k) == 1.0f)
-                {
-                    neighbors++;
-                }
-            }
+            neighbourCount++;
         }
     }
     if (value == 1.0f)
     {
-        if (neighbors == 2 || neighbors == 3)
+        if (neighbourCount == 2 || neighbourCount == 3)
         {
             return 1.0f;
         }
     }
     else
     {
-        if (neighbors == 3)
+        if (neighbourCount == 3)
+        {
+            return 1.0f;
+        }
+    }
+    return 0.0f;
+}
+
+float smoothConway(int x, int y, int z, SimChunk data)
+{
+    int neighbourCount = 0;
+    float value = data.get(x, y, z);
+    for (vec3i neighbour : getNeighbours(vec3i(x, y, z)))
+    {
+        if (data.get(neighbour) == 1.0f)
+        {
+            neighbourCount++;
+        }
+    }
+    if (value == 1.0f)
+    {
+        if (neighbourCount == 2 || neighbourCount == 3)
+        {
+            return 1.0f;
+        }
+    }
+    else
+    {
+        if (neighbourCount == 3)
         {
             return 1.0f;
         }
@@ -40,41 +58,51 @@ float conway(int x, int y, int z, sparseChunk data)
     return std::max(0.0f, value - DECAY);
 }
 
-
-float smoothConway(int x, int y, int z, sparseChunk data)
+float analogConway(int x, int y, int z, SimChunk data)
 {
-    float neighbors = 0;
+    float neighbourCount = 0;
     float value = data.get(x, y, z);
-    for (int i = -1; i <= 1; i++)
+    for (vec3i neighbour : getNeighbours(vec3i(x, y, z)))
     {
-        for (int j = -1; j <= 1; j++)
+        if (data.has(neighbour))
         {
-            for (int k = -1; k <= 1; k++)
-            {
-                if (i == 0 && j == 0 && k == 0)
-                {
-                    continue;
-                }
-                if (data.has(x + i, y + j, z + k))
-                {
-                    neighbors += data.get(x + i, y + j, z + k);
-                }
-            }
+            neighbourCount += data.get(neighbour);
         }
     }
     if (value != 0.0f)
     {
-        if (neighbors >= 2 && neighbors <= 3)
+        if (neighbourCount >= 2 && neighbourCount <= 3)
         {
             return value;
         }
     }
     else
     {
-        if (neighbors >= 2.5 && neighbors <= 3)
+        if (neighbourCount >= 2.5 && neighbourCount <= 3)
         {
             return std::min(value + DECAY, 1.0f);
         }
     }
     return std::max(value - DECAY, 0.0f);
+}
+
+float naive(int x, int y, int z, SimChunk data)
+{
+    float neighbourCount = 0;
+    float value = data.get(x, y, z);
+    for (vec3i neighbour : getNeighbours(vec3i(x, y, z)))
+    {
+        if (data.has(neighbour))
+        {
+            neighbourCount += data.get(neighbour);
+        }
+    }
+    if (neighbourCount > 0)
+    {
+        return std::min(value + neighbourCount, 1.0f);
+    }
+    else
+    {
+        return std::min(value - DECAY, 0.0f);
+    }
 }

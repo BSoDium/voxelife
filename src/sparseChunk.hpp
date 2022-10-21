@@ -4,7 +4,9 @@
 #define HASH_CONSTANT 0x9e3779b9
 
 #include <map>
+#include <string>
 #include <limits>
+#include <vector>
 #include <functional>
 #include <glm/glm.hpp>
 
@@ -15,16 +17,18 @@ struct vec3i {
   vec3i(int x, int y, int z);
   bool operator<(const struct vec3i& other) const;
   vec3i operator+(const struct vec3i& other) const;
+  std::string toString();
 };
 
-class sparseChunk
+class SparseChunk
 {
-private:
-  std::map<vec3i, float> voxels;
+protected:
+  /** The voxel field data. */
+  std::map<vec3i, float> data;
 
 public:
-  sparseChunk();
-  ~sparseChunk();
+  SparseChunk();
+  ~SparseChunk();
 
   /**
    * Set a voxel at a position.
@@ -62,10 +66,21 @@ public:
    * Iterate over all voxels in the chunk.
    */
   void clear();
+
+  /**
+   * Retrieve the raw voxel data.
+  */
+  std::map<vec3i, float> getData();
+
   /**
    * Iterate over all voxels in the chunk.
    */
   void forEach(std::function<void(vec3i, float)> f);
 };
+
+/**
+ * Get a vector containing the positions of all neighbors of a position.
+*/
+std::vector<vec3i> getNeighbours(vec3i pos, bool includeSelf = false);
 
 #endif
