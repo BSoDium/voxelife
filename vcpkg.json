@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "voxelife",
+  "version": "0.1.0",
+  "dependencies": [
+    "freeglut",
+    "opengl",
+    "glfw3",
+    "glew",
+    "glm"
+  ]
+}

@@ -21,10 +21,13 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
     "${PROJECT_SOURCE_DIR}/src/*.hpp"
 )
 
-# Display all source files
+# Display number of source files found
+set(SOURCE_COUNT 0)
 foreach(source IN LISTS sources)
-    message(STATUS "Found source file: ${source}")
+    math(EXPR SOURCE_COUNT "${SOURCE_COUNT} + 1")
 endforeach()
+message(STATUS "Found ${SOURCE_COUNT} source files")
+
 
 target_link_libraries(${PROJECT_NAME} 
   PRIVATE 
