@@ -13,8 +13,8 @@
 #include <glm/glm.hpp>
 #include <cmath>
 
-#include "mesh.hpp"
-#include "drawable.hpp"
+#include "rendering/mesh.hpp"
+#include "rendering/drawable.hpp"
 #include "geomutils.hpp"
 #include "storage/simChunk.hpp"
 
