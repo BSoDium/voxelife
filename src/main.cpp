@@ -222,7 +222,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
     render();
 
     if (running)
-      field->apply(conway);
+      field->apply(smoothConway);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);

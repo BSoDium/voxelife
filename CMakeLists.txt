@@ -1,10 +1,38 @@
 cmake_minimum_required(VERSION 3.10)
-project(voxelife VERSION 2021.0.0 LANGUAGES C CXX)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+project(voxelife 
+  VERSION 0.1.0 
+  LANGUAGES C CXX
+)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(OpenGL_GL_PREFERENCE GLVND)
 
-add_subdirectory(src)
+add_executable(${PROJECT_NAME})
+
+find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(GLUT REQUIRED)
+find_package(glm REQUIRED)
+
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/src/*.hpp"
+)
+
+# Display all source files
+foreach(source IN LISTS sources)
+    message(STATUS "Found source file: ${source}")
+endforeach()
+
+target_link_libraries(${PROJECT_NAME} 
+  PRIVATE 
+    OpenGL::GL
+    OpenGL::GLU
+    GLEW::GLEW
+    glm::glm
+    glfw
+)
+
+target_sources(${PROJECT_NAME} PRIVATE ${sources})

@@ -16,7 +16,7 @@
 #include "mesh.hpp"
 #include "drawable.hpp"
 #include "geomutils.hpp"
-#include "simChunk.hpp"
+#include "storage/simChunk.hpp"
 
 class World : public Drawable
 {
