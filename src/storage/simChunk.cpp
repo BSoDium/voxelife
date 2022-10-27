@@ -125,7 +125,7 @@ VoxelState SimChunk::getState(vec3i pos)
 
 VoxelState SimChunk::getState(int x, int y, int z)
 {
-  getState(vec3i(x, y, z));
+  return getState(vec3i(x, y, z));
 }
 
 bool SimChunk::hasState(vec3i pos)

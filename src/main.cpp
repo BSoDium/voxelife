@@ -150,7 +150,7 @@ void error_callback(__attribute__((unused)) int error, __attribute__((unused)) c
   fprintf(stderr, "GLFW Error: %s\n", description);
 }
 
-void resize_callback(GLFWwindow*, int width, int height)
+void resize_callback(GLFWwindow *, int width, int height)
 {
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
