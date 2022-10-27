@@ -30,7 +30,7 @@ void World::updateMesh()
   // Create the vertices
   int i = 0;
 
-  data.forEach([&](vec3i pos, float value)
+  data.forEachActive([&](vec3i pos, float value)
                {
     if (value > 0.0f) {
       float halfSize = value / 2.0f;
@@ -150,8 +150,7 @@ void World::apply(std::function<float(int, int, int, SimChunk)> f)
       [&](vec3i pos, float)
       {
         setVoxel(pos.x, pos.y, pos.z, f(pos.x, pos.y, pos.z, data));
-      },
-      true);
+      });
 
   // Update the data
   update();

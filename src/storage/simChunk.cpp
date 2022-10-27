@@ -44,42 +44,45 @@ SimChunk::~SimChunk()
 
 void SimChunk::set(vec3i pos, float value)
 {
-  SparseChunk::set(pos, value);
+#pragma omp critical
+  {
+    SparseChunk::set(pos, value);
 
-  if (value == 0.0f)
-  {
-    for (vec3i neighbour : getNeighbours(pos))
+    if (value == 0.0f)
     {
-      if (hasState(neighbour))
+      for (vec3i neighbour : getNeighbours(pos))
       {
-        VoxelState neighbourState = getState(neighbour);
-        // If the neighbour is monitored only due to this voxel, remove it.
-        if (neighbourState.culpritCount() == 1)
+        if (hasState(neighbour))
         {
-          delState(neighbour);
-        }
-        else
-        {
-          // Otherwise, remove this voxel from the culprit's list.
-          neighbourState.removeCulprit(pos);
+          VoxelState neighbourState = getState(neighbour);
+          // If the neighbour is monitored only due to this voxel, remove it.
+          if (neighbourState.culpritCount() == 1)
+          {
+            delState(neighbour);
+          }
+          else
+          {
+            // Otherwise, remove this voxel from the culprit's list.
+            neighbourState.removeCulprit(pos);
+          }
         }
       }
+      delState(pos);
     }
-    delState(pos);
-  }
-  else if (!hasState(pos))
-  {
-    for (vec3i neighbour : getNeighbours(pos))
+    else if (!hasState(pos))
     {
-      // If the neighbour isn't registered, register it.
-      if (!hasState(neighbour))
+      for (vec3i neighbour : getNeighbours(pos))
       {
-        setState(neighbour, VoxelState());
+        // If the neighbour isn't registered, register it.
+        if (!hasState(neighbour))
+        {
+          setState(neighbour, VoxelState());
+        }
+        // Add this voxel as a culprit.
+        getState(neighbour).addCulprit(pos);
       }
-      // Add this voxel as a culprit.
-      getState(neighbour).addCulprit(pos);
+      setState(pos, VoxelState());
     }
-    setState(pos, VoxelState());
   }
 }
 
@@ -140,21 +143,25 @@ int SimChunk::stateSize()
   return stateData.size();
 }
 
-void SimChunk::forEach(std::function<void(vec3i, float)> f, bool includeMonitored)
+void SimChunk::forEach(std::function<void(vec3i, float)> f)
 {
-  // TODO: Refactor this to use a single loop.
-  if (!includeMonitored)
+#pragma omp parallel
   {
-    for (auto it = data.begin(); it != data.end(); ++it)
+#pragma omp single
     {
-      f(it->first, get(it->first));
+      for (std::map<vec3i, VoxelState>::iterator it = stateData.begin(); it != stateData.end(); ++it)
+      {
+#pragma omp task
+        f(it->first, get(it->first));
+      }
     }
   }
-  else
+}
+
+void SimChunk::forEachActive(std::function<void(vec3i, float)> f)
+{
+  for (std::map<vec3i, float>::iterator it = data.begin(); it != data.end(); ++it)
   {
-    for (auto it = stateData.begin(); it != stateData.end(); ++it)
-    {
-      f(it->first, get(it->first));
-    }
+    f(it->first, get(it->first));
   }
 }

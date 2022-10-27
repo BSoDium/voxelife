@@ -4,7 +4,7 @@ This is a proof of concept for a three-dimensional game of life simulation. It i
 
 ## Installation
 
-This repository uses vcpkg for dependency management. To install the dependencies, run the following commands:  
+This repository uses vcpkg for dependency management. If you 
 
 Setup the dependencies mentionned below, *ie* `OpenGL`, `GLFW`, `Glm`, `GLEW`, and `GLUT`. A bash script is available for debian/ubuntu-based systems at `scripts/deps_setup_debian.sh`.
 

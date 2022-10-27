@@ -3,6 +3,7 @@
 
 #include <set>
 #include <stdexcept>
+#include <iostream>
 
 #include "sparseChunk.hpp"
 
@@ -84,7 +85,12 @@ public:
   /**
    * Iterate over all monitored voxels in the chunk.
   */
-  void forEach(std::function<void(vec3i, float)> f, bool includeMonitored = false);
+  void forEach(std::function<void(vec3i, float)> f);
+
+  /**
+   * Iterate over all active voxels in the chunk.
+  */
+  void forEachActive(std::function<void(vec3i, float)> f);
 };
 
 #endif

@@ -64,7 +64,9 @@
       "concepts": "cpp",
       "cstring": "cpp",
       "ranges": "cpp",
-      "stop_token": "cpp"
+      "stop_token": "cpp",
+      "any": "cpp",
+      "iomanip": "cpp"
     },
   },
   "tasks": {
