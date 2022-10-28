@@ -1,4 +1,4 @@
-# Three-dimensional Game of life simulation
+# 🧬 Three-dimensional Game of life simulation
 
 This is a proof of concept for a three-dimensional game of life simulation. It is written in C++ and uses OpenGL for rendering.
 
@@ -16,6 +16,9 @@ vcpkg install
 ```
 
 If you encounter any errors while running the install command, please refer to the [vcpkg issues](https://github.com/microsoft/vcpkg/issues), as it is highly likely that someone else has encountered it before.
+
+:fire: Top related issues:  
+> https://github.com/microsoft/vcpkg/issues/26848
 
 Once the dependencies are installed, you can build the project using cmake. The following commands will build the project and place the executable in the `build` directory.
 
