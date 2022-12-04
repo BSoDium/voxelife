@@ -81,6 +81,8 @@ private:
   std::vector<vertex> vertices;
   /* Primitives define the topology of the mesh. */
   std::vector<primitive> primitives;
+  /* Whether the GL buffers are up to date with the vertices and primitives. */
+  bool outOfDate = true;
   /* Updates the vertex and primitive buffers. */
   void updateGLBuffers();
 

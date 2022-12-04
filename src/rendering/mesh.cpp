@@ -16,8 +16,7 @@ Mesh::Mesh(std::vector<vertex> vertices, std::vector<primitive> primitives, Mate
   this->vertices = vertices;
   this->primitives = primitives;
   this->material = material;
-  // Update the buffers
-  updateGLBuffers();
+  outOfDate = true;
 }
 
 Mesh::Mesh(int vertices, int primitives, Material material) : Mesh(std::vector<vertex>(vertices), std::vector<primitive>(primitives), material)
@@ -32,12 +31,18 @@ void Mesh::updateGLBuffers()
 {
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), &vertices[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, primitive_buffer);
-  glBufferData(GL_ARRAY_BUFFER, primitives.size() * sizeof(primitive), &primitives[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, primitive_buffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitives.size() * sizeof(primitive), &primitives[0], GL_STATIC_DRAW);
 }
 
 void Mesh::draw()
 {
+  if (outOfDate)
+  {
+    updateGLBuffers();
+    outOfDate = false;
+  }
+  
   if (this->wireframe)
   {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // activate wireframe mode
@@ -68,6 +73,18 @@ void Mesh::draw()
 
     if (this->wireframe)
     {
+      // Draw gl lines for each primitive
+      // for (int i = 0; i < primitives.size(); i++)
+      // {
+      //   glBegin(GL_LINE_LOOP);
+      //   {
+      //     glVertex3f(vertices[primitives[i].a].x, vertices[primitives[i].a].y, vertices[primitives[i].a].z);
+      //     glVertex3f(vertices[primitives[i].b].x, vertices[primitives[i].b].y, vertices[primitives[i].b].z);
+      //     glVertex3f(vertices[primitives[i].c].x, vertices[primitives[i].c].y, vertices[primitives[i].c].z);
+      //   }
+      //   glEnd();
+      // }
+      
       // draw the normals
       for (int i = 0; i < (int)vertices.size(); i++)
       {
@@ -89,25 +106,25 @@ void Mesh::draw()
 void Mesh::setVertices(std::vector<vertex> vertices)
 {
   this->vertices = vertices;
-  updateGLBuffers();
+  outOfDate = true;
 }
 
 void Mesh::setPrimitives(std::vector<primitive> primitives)
 {
   this->primitives = primitives;
-  updateGLBuffers();
+  outOfDate = true;
 }
 
 void Mesh::setVertex(int index, vertex v)
 {
   vertices[index] = v;
-  updateGLBuffers();
+  outOfDate = true;
 }
 
 void Mesh::setPrimitive(int index, primitive p)
 {
   primitives[index] = p;
-  updateGLBuffers();
+  outOfDate = true;
 }
 
 void Mesh::setWireframe(bool wireframe)
@@ -144,5 +161,5 @@ void Mesh::apply(std::tuple<std::vector<vertex>, std::vector<primitive>> (*algor
     this->primitives = std::get<1>(result);
     std::cout << "Iteration " << i + 1 << " out of " << iterations << std::endl;
   }
-  updateGLBuffers();
+  outOfDate = true;
 }

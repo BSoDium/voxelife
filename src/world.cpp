@@ -11,10 +11,10 @@
 World::World()
 {
   // Create the voxel field data
-  data = SimChunk();
-  buffer = SimChunk();
+  data = new SimChunk();
+  buffer = new SimChunk();
 
-  updateMesh();
+  meshNeedsUpdate = true;
 }
 
 World::~World()
@@ -30,8 +30,8 @@ void World::updateMesh()
   // Create the vertices
   int i = 0;
 
-  data.forEachActive([&](vec3i pos, float value)
-               {
+  data->forEachActive([&](vec3i pos, float value)
+                     {
     if (value > 0.0f) {
       float halfSize = value / 2.0f;
       
@@ -41,9 +41,11 @@ void World::updateMesh()
       for (int i = -1; i <= 1; i += 2) {
         for (int j = -1; j <= 1; j += 2) {
           for (int k = -1; k <= 1; k += 2) {
-            vertex v = vertex(voxelCenter.x + i * halfSize, voxelCenter.y + j * halfSize, voxelCenter.z + k * halfSize, 
-            halfSize, halfSize, halfSize,
-            i, j, k);
+            vertex v = vertex(
+              voxelCenter.x + i * halfSize, voxelCenter.y + j * halfSize, voxelCenter.z + k * halfSize, 
+              halfSize, halfSize, halfSize,
+              i, j, k
+            );
             vertices.push_back(v);
           }
         }
@@ -66,7 +68,7 @@ void World::updateMesh()
       i += 8;
     } });
 
-  mesh = Mesh(
+  mesh = new Mesh(
       vertices,
       primitives,
       Material(
@@ -78,42 +80,47 @@ void World::updateMesh()
 
 void World::draw()
 {
+  if (meshNeedsUpdate)
+  {
+    updateMesh();
+    meshNeedsUpdate = false;
+  }
+  
   glPushMatrix();
 
   // Draw the mesh
-  mesh.draw();
+  mesh->draw();
 
   glPopMatrix();
 }
 
 void World::setVoxel(int x, int y, int z, float value)
 {
-  buffer.set(vec3i(x, y, z), value);
+  buffer->set(vec3i(x, y, z), value);
 }
 
 void World::setVoxel(vec3i pos, float value)
 {
-  buffer.set(pos, value);
+  buffer->set(pos, value);
 }
 
 float World::getVoxel(int x, int y, int z)
 {
-  return data.get(vec3i(x, y, z));
+  return data->get(vec3i(x, y, z));
 }
 
 float World::getVoxel(vec3i pos)
 {
-  return data.get(pos);
+  return data->get(pos);
 }
 
 void World::update()
 {
   // Update the voxel field
   data = buffer;
-  buffer = SimChunk();
+  buffer = new SimChunk();
 
-  // Update the mesh
-  updateMesh();
+  meshNeedsUpdate = true;
 }
 
 void World::randomize()
@@ -146,12 +153,21 @@ void World::randomize()
 void World::apply(std::function<float(int, int, int, SimChunk)> f)
 {
   // Apply the function to the data
-  data.forEach(
+  data->forEach(
       [&](vec3i pos, float)
       {
-        setVoxel(pos.x, pos.y, pos.z, f(pos.x, pos.y, pos.z, data));
+        setVoxel(pos.x, pos.y, pos.z, f(pos.x, pos.y, pos.z, *data));
       });
 
   // Update the data
   update();
+}
+
+void World::print()
+{
+  data->forEachActive([&](vec3i pos, float value)
+                     {
+    if (value > 0.0f) {
+      std::cout << "Voxel at " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+    } });
 }

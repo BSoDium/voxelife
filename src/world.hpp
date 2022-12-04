@@ -22,11 +22,13 @@ class World : public Drawable
 {
 private:
   /* The voxel field data */
-  SimChunk data;
+  SimChunk *data;
   /** A copy of the voxel field data which is used to edit the voxel field. */
-  SimChunk buffer;
+  SimChunk *buffer;
   /* The mesh associated with the voxel field. */
-  Mesh mesh;
+  Mesh *mesh;
+  /* Whether the mesh needs to be updated on the next draw call. */
+  bool meshNeedsUpdate = true; // HACK: This should not be necessary, and still updating outside of draw() results in a failure to draw the mesh.
   
   /**
    * Creates the vertices and primitives of the mesh.
@@ -75,6 +77,11 @@ public:
    * Apply a function to each voxel in need of updating.
   */
   void apply(std::function<float(int, int, int, SimChunk)> f);
+
+  /**
+   * Print the voxel field data to the console.
+  */
+  void print();
 };
 
 #endif

@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <math.h>
+#include <thread>
+#include <chrono>
+#include <future>
 
 // macosx
 #ifdef __APPLE__
@@ -34,12 +37,23 @@ int windowSize[2] = {800, 800};
 float nearPlane = 0.1f;
 float farPlane = 1000.0f;
 
-float t = 0.0f;
+// Render loop clock
+int t = 0.0f;
+
+struct threadState
+{
+  bool alive;
+  bool paused;
+};
 
 World *field;
 
-// TODO: make the sim into an actual thread
-bool running = false;
+struct
+{
+  threadState sim;
+} threads = {
+    {true, true},
+};
 
 /**
  * Place the camera in the scene
@@ -80,32 +94,6 @@ void placeLighting()
 }
 
 /**
- * Display callback.
- */
-void render()
-{
-  // clear the screen with blue
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  // place the camera correctly
-  placeCamera();
-
-  // place the lights
-  placeLighting();
-
-  glPushMatrix();
-
-  // Draw the field
-  field->draw();
-  field->drawRef();
-
-  glPopMatrix();
-}
-
-/**
  * Key input callback.
  */
 void key_callback(GLFWwindow *window, int key, __attribute__((unused)) int scancode, __attribute__((unused)) int action, __attribute__((unused)) int mods)
@@ -129,7 +117,7 @@ void key_callback(GLFWwindow *window, int key, __attribute__((unused)) int scanc
     if (key == GLFW_KEY_R)
       field->randomize();
     if (key == GLFW_KEY_SPACE)
-      running = !running;
+      threads.sim.paused = !threads.sim.paused;
   }
   else if (action == GLFW_RELEASE)
   {
@@ -186,6 +174,32 @@ void initGL()
   gluLookAt(-6, 5, -6, 0, 0, 2, 0, 1, 0);
 }
 
+/**
+ * Display callback.
+ */
+void render()
+{
+  // clear the screen with blue
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  // place the camera correctly
+  placeCamera();
+
+  // place the lights
+  placeLighting();
+
+  glPushMatrix();
+
+  // Draw the field
+  field->draw();
+  field->drawRef();
+
+  glPopMatrix();
+}
+
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
 {
 
@@ -214,15 +228,27 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
   field = new World();
   field->randomize();
 
+  // Start the simulation
+  std::thread simulation([]()
+                         {
+    std::cout << "Simulation thread started" << std::endl;
+    while (threads.sim.alive)
+    {
+      if (!threads.sim.paused)
+      {
+        field->apply(smoothConway);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      }
+    } });
+
   // Loop until the user closes the window
   while (!glfwWindowShouldClose(window))
   {
-    t += 0.01f;
+    t++;
 
+    /* Render scene */
     render();
-
-    if (running)
-      field->apply(smoothConway);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
@@ -232,6 +258,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
   }
 
   glfwTerminate();
+
+  // Kill the simulation thread
+  threads.sim.alive = false;
+  simulation.join();
 
   return EXIT_SUCCESS;
 }

@@ -146,15 +146,14 @@ int SimChunk::stateSize()
 void SimChunk::forEach(std::function<void(vec3i, float)> f)
 {
 #pragma omp parallel
-  {
 #pragma omp single
+  {
+    for (std::map<vec3i, VoxelState>::iterator it = stateData.begin(); it != stateData.end(); ++it)
     {
-      for (std::map<vec3i, VoxelState>::iterator it = stateData.begin(); it != stateData.end(); ++it)
-      {
-#pragma omp task
-        f(it->first, get(it->first));
-      }
+#pragma omp task firstprivate(it)
+      f(it->first, get(it->first));
     }
+#pragma omp taskwait
   }
 }
 

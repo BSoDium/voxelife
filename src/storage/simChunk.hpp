@@ -4,6 +4,7 @@
 #include <set>
 #include <stdexcept>
 #include <iostream>
+#include <omp.h>
 
 #include "sparseChunk.hpp"
 
