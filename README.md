@@ -48,3 +48,16 @@ Open the VS Code workspace, which can be found at the root of the repository. Pr
 }
 ```
 You should now be able to build and run the project from within VS Code, by opening the <kbd>Run and Debug</kbd> panel and selecting the `(gdb) Launch` configuration.
+
+## Usage
+
+Controls:
+- Arrow keys to rotate the camera around the origin
+- <kbd>W</kbd> and <kbd>S</kbd> to move the camera closer and further away from the origin
+- <kbd>Space</kbd> to play/pause the simulation
+- <kbd>R</kbd> to reset and randomize the current cell state
+
+## Screenshots
+
+![Screenshot 2](docs/Screenshot_01.png)
+![Screenshot 3](docs/Screenshot_02.png)

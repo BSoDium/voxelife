@@ -43,7 +43,7 @@ int t = 0.0f;
 struct threadState
 {
   bool alive;
-  bool paused;
+  bool playing;
 };
 
 World *field;
@@ -52,7 +52,7 @@ struct
 {
   threadState sim;
 } threads = {
-    {true, true},
+    {true, false},
 };
 
 /**
@@ -117,7 +117,7 @@ void key_callback(GLFWwindow *window, int key, __attribute__((unused)) int scanc
     if (key == GLFW_KEY_R)
       field->randomize();
     if (key == GLFW_KEY_SPACE)
-      threads.sim.paused = !threads.sim.paused;
+      threads.sim.playing = !threads.sim.playing;
   }
   else if (action == GLFW_RELEASE)
   {
@@ -234,7 +234,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
     std::cout << "Simulation thread started" << std::endl;
     while (threads.sim.alive)
     {
-      if (!threads.sim.paused)
+      if (threads.sim.playing)
       {
         field->apply(smoothConway);
 

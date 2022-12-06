@@ -72,19 +72,7 @@ void Mesh::draw()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     if (this->wireframe)
-    {
-      // Draw gl lines for each primitive
-      // for (int i = 0; i < primitives.size(); i++)
-      // {
-      //   glBegin(GL_LINE_LOOP);
-      //   {
-      //     glVertex3f(vertices[primitives[i].a].x, vertices[primitives[i].a].y, vertices[primitives[i].a].z);
-      //     glVertex3f(vertices[primitives[i].b].x, vertices[primitives[i].b].y, vertices[primitives[i].b].z);
-      //     glVertex3f(vertices[primitives[i].c].x, vertices[primitives[i].c].y, vertices[primitives[i].c].z);
-      //   }
-      //   glEnd();
-      // }
-      
+    {      
       // draw the normals
       for (int i = 0; i < (int)vertices.size(); i++)
       {
